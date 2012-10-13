@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Backbone.CollectionElementBinder Example 1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript" src="third-party/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="third-party/underscore-min.js"></script>
+<script type="text/javascript" src="third-party/backbone-min.js"></script>
+<script type="text/javascript" src="third-party/Backbone.ModelBinder.min.js"></script>
+<script type="text/javascript" src="../Backbone.CollectionElementBinder.js"></script>
+
+<script type="text/javascript">
+$(function(){
+    // Collection element binding
+    var defaultModels = [
+	    {
+	        title: 'Title #1',
+	        url: '#url-1'
+	    },
+	    {
+	        title: 'Title #2',
+	        url: '#url-3'
+	    },
+	    {
+	        title: 'Title #3',
+	        url: '#url-3'
+	    }
+	];
+    collection = new Backbone.Collection(defaultModels);
+    
+    var modelBindings = {
+        title: [
+            {selector: 'a'},
+            {selector: 'a', elAttribute: 'title'}
+        ],
+        url: {selector: 'a', elAttribute: 'href'}
+    };
+    
+    var collectionElBinder = new Backbone.CollectionElementBinder();
+    collectionElBinder.on('reset', function(models){
+        // Collection element binder render complete: "reset"
+    });
+    collectionElBinder.on('add', function(model){
+        // Collection element binder render complete: "add"
+    });
+    collectionElBinder.on('remove', function(model){
+        // Collection element binder render complete: "remove"
+    });
+    
+    // Bind collection to elements
+    var htmlPrototype = $('.list li');
+    var htmlList = $('.list');
+    collectionElBinder.bind(collection, htmlList, htmlPrototype, modelBindings);
+    
+    // Tests
+    $('.add').click(function(){
+        collection.add({title: 'Title #x', url: '#url-x'});
+    });
+    $('.remove-last').click(function(){
+        if (collection.length == 0) {
+            return;
+        }
+        
+        var lastModel = collection.models[collection.models.length - 1];
+        collection.remove(lastModel.cid);
+    });
+    $('.remove-first').click(function(){
+        if (collection.length == 0) {
+            return;
+        }
+        
+        var firstModel = collection.models[0];
+        collection.remove(firstModel.cid);
+    });
+    $('.reset').click(function(){
+        collection.reset(defaultModels);
+    });
+    $('.rebind').click(function(){
+        collection.reset(defaultModels);
+        collectionElBinder.bind(collection, htmlList, htmlPrototype, modelBindings);
+    });
+    $('.unbind').click(function(){
+        collectionElBinder.unbind();
+    });
+});
+</script>
+
+</head>
+<body>
+
+<input class="add" type="button" value="Add" />
+<input class="remove-first" type="button" value="Remove first" />
+<input class="remove-last" type="button" value="Remove last" />
+<input class="reset" type="button" value="Reset" />
+<input class="rebind" type="button" value="Rebind" />
+<input class="unbind" type="button" value="Unbind" />
+<ul class="list">
+	<li style="display: none"><a href="#" title=""></a></li>
+</ul>
+
+</body>
+</html>
