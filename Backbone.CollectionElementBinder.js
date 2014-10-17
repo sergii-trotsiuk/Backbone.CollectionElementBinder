@@ -118,6 +118,8 @@
          * @returns Void
          */
         _bindCollectionToView: function() {
+            this._collection.collectionBinder = this;
+            
             this._collection.on('reset', this._onCollectionReset, this);
             if (!this._onlyResetBind) {
                 this._collection.on('add', this._onCollectionAdd, this);
@@ -153,7 +155,10 @@
                 this._collection.off('reset', this._onCollectionReset, this);
                 this._collection.off('add', this._onCollectionAdd, this);
                 this._collection.off('remove', this._onCollectionRemove, this);
-                this._collection = undefined;
+                if (this._collection.collectionBinder) {
+                    delete this._collection.collectionBinder;
+                }
+                this._collection = null;
             }
             
             this._hideModelHtmlElement(this._modelHtmlElements);
